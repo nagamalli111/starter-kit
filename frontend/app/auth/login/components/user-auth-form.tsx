@@ -13,7 +13,7 @@ import { useAuthGuard } from "@/lib/auth/use-auth";
 import { HttpErrorResponse } from "@/models/http/HttpErrorResponse";
 import ErrorFeedback from "@/components/error-feedback";
 import Link from "next/link";
-import { FaGithub, FaGoogle} from "react-icons/fa";
+import { FaGithub, FaGoogle } from "react-icons/fa";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -25,19 +25,24 @@ const loginFormSchema = z.object({
 type Schema = z.infer<typeof loginFormSchema>;
 export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const {login} = useAuthGuard({middleware: 'guest', redirectIfAuthenticated: '/profile'});
-  const [errors, setErrors] = React.useState<HttpErrorResponse | undefined>(undefined);
+  const { login } = useAuthGuard({
+    middleware: "guest",
+    redirectIfAuthenticated: "/",
+  });
+  const [errors, setErrors] = React.useState<HttpErrorResponse | undefined>(
+    undefined
+  );
 
   async function onSubmit(data: Schema) {
     login({
       onError: (errors) => {
-        setErrors(errors)
+        setErrors(errors);
         if (errors) {
           toast.error("Authentication failed");
         }
       },
       props: data,
-    })
+    });
   }
 
   const { register, handleSubmit, formState } = useForm<Schema>({
@@ -45,8 +50,12 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
     reValidateMode: "onSubmit",
   });
 
-  function getProviderLoginUrl(provider: 'google' | 'facebook' | 'github' | 'okta') {
-    return process.env.NEXT_PUBLIC_BASE_URL + `/oauth2/authorization/${provider}`
+  function getProviderLoginUrl(
+    provider: "google" | "facebook" | "github" | "okta"
+  ) {
+    return (
+      process.env.NEXT_PUBLIC_BASE_URL + `/oauth2/authorization/${provider}`
+    );
   }
 
   return (
@@ -88,9 +97,9 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
           </div>
 
           <ErrorFeedback data={errors} />
-          
+
           <Button disabled={isLoading} type="submit">
-            {isLoading && 'Logging in...'}
+            {isLoading && "Logging in..."}
             Sign In with Email
           </Button>
         </div>
@@ -107,15 +116,25 @@ export function UserAuthForm({ className, ...props }: UserAuthFormProps) {
       </div>
 
       <div className="flex flex-col gap-y-2">
-        <Link href={getProviderLoginUrl('github')}>
-          <Button variant="outline" type="button" disabled={isLoading} className="w-full">
+        <Link href={getProviderLoginUrl("github")}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={isLoading}
+            className="w-full"
+          >
             <FaGithub className="mr-2 h-4 w-4" />
             GitHub
           </Button>
         </Link>
-        
-        <Link href={getProviderLoginUrl('google')}>
-          <Button variant="outline" type="button" disabled={isLoading} className="w-full">
+
+        <Link href={getProviderLoginUrl("google")}>
+          <Button
+            variant="outline"
+            type="button"
+            disabled={isLoading}
+            className="w-full"
+          >
             <FaGoogle className="mr-2 h-4 w-4" />
             Google
           </Button>
