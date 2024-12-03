@@ -50,7 +50,8 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(customizer -> {
       customizer
-          .requestMatchers(antMatcher(HttpMethod.POST, "/api/users")).permitAll()
+              .requestMatchers(antMatcher(HttpMethod.POST, "/api/cart/")).permitAll()
+              .requestMatchers(antMatcher(HttpMethod.POST, "/api/users")).permitAll()
           .requestMatchers(antMatcher(HttpMethod.GET, "/api/users/verify-email")).permitAll()
           .requestMatchers(antMatcher(HttpMethod.POST, "/api/users/forgot-password")).permitAll()
           .requestMatchers(antMatcher(HttpMethod.PATCH, "/api/users/reset-password")).permitAll()
@@ -58,7 +59,7 @@ public class SecurityConfiguration {
           .requestMatchers(antMatcher(HttpMethod.GET, "/api/auth/csrf")).permitAll()
           .requestMatchers(antMatcher(HttpMethod.GET, "/api/auth/impersonate")).hasRole("ADMIN")
           .requestMatchers(antMatcher(HttpMethod.GET, "/api/auth/impersonate/exit")).hasRole("PREVIOUS_ADMINISTRATOR")
-          .anyRequest().authenticated();
+          .anyRequest().permitAll();
     });
 
     http.oauth2Login(customizer -> {
@@ -74,12 +75,12 @@ public class SecurityConfiguration {
 
     http.addFilterBefore(new UsernamePasswordAuthenticationFilter(), LogoutFilter.class);
     http.userDetailsService(userDetailsService);
-
-    http.csrf(csrf -> {
-      csrf
-          .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-          .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler());
-    }).addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
+http.csrf(csrf -> csrf.disable());
+//    http.csrf(csrf -> {
+//      csrf
+//          .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+//          .csrfTokenRequestHandler(new SpaCsrfTokenRequestHandler());
+//    }).addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class);
 
     http.cors(customizer -> {
       customizer.configurationSource(corsConfigurationSource());

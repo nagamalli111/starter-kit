@@ -4,12 +4,9 @@ import com.example.backend.entity.AbstractEntity;
 import com.example.backend.users.data.CreateUserRequest;
 import com.example.backend.users.data.UpdateUserRequest;
 import com.example.backend.util.ApplicationContextProvider;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+import com.start.ecommerce.common.Address;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +31,8 @@ public class User extends AbstractEntity implements UserDetails {
   private String password;
   private String firstName;
   private String lastName;
+  @OneToOne(cascade = CascadeType.ALL)
+  private Address address;
   @Setter
   private boolean verified = false;
   @Setter

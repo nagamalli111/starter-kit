@@ -1,4 +1,5 @@
 "use client";
+import ProductForm from "@/components/ProductForm";
 import { useParams } from "next/navigation";
 
 export default function UpdateProduct() {
@@ -9,6 +10,7 @@ export default function UpdateProduct() {
       <div>
         <h1>Dashboard</h1>
         <p>Params are {params.productId}</p>
+        <ProductForm />
       </div>
     </main>
   );

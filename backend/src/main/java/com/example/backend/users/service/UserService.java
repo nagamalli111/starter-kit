@@ -20,6 +20,8 @@ import com.example.backend.util.exception.ApiException;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.jobrunr.scheduling.BackgroundJobRequest;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,6 +40,10 @@ public class UserService {
   private final UploadedFileRepository uploadedFileRepository;
   private final PasswordEncoder passwordEncoder;
   private final FileUploadService fileUploadService;
+
+  public Optional<User> getUser(String id) {
+    return userRepository.findByEmail(id);
+  }
 
   @Transactional
   public UserResponse create(@Valid CreateUserRequest request) {

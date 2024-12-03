@@ -1,13 +1,44 @@
 "use client";
-import { Product as ProductType } from "./ProductList";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { Product as ProductType } from "./ProductList";
+
 export default function ProductForm() {
+  const params = useParams();
+  const router = useRouter();
+  const { productId: id } = params;
+  const isEditMode = Boolean(id);
+
+  const [initialData, setInitialData] = useState<ProductType | null>(null);
+
   const {
     register,
     handleSubmit,
+    setValue,
+    reset,
     formState: { errors },
-  } = useForm<ProductType>();
+  } = useForm<ProductType>({ defaultValues: initialData || undefined });
+
+  useEffect(() => {
+    if (isEditMode) {
+      axios
+        .get(`http://localhost:8080/api/products/${id}`)
+        .then((response) => {
+          setInitialData(response.data);
+        })
+        .catch((error) => {
+          console.error("Error fetching product details", error);
+        });
+    }
+  }, [id]);
+
+  useEffect(() => {
+    if (initialData) {
+      reset(initialData); // Populate the form with the fetched data
+    }
+  }, [initialData, reset]);
 
   const onSubmit: SubmitHandler<ProductType> = (data) => {
     const formData = new FormData();
@@ -33,18 +64,20 @@ export default function ProductForm() {
       formData.append("imageFile", imageFile); // Ensure `imageFile` is a File object
     }
 
-    axios
-      .post("http://localhost:8080/api/products", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+    const request = isEditMode
+      ? axios.put(`http://localhost:8080/api/products/${id}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+      : axios.post("http://localhost:8080/api/products", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+
+    request
+      .then((response) => {
+        console.log(response);
+        router.push("/"); // Redirect after success
       })
-      .then((respoonse) => {
-        console.log(respoonse);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+      .catch((error) => console.error(error));
   };
 
   return (
